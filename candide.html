@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Candide, ou l'Optimisme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --berry:#6D2E46; --cream:#ECE2D0; --white:#FFFFFF; --dark:#3A2530;
+  --bg:#F7F1E6; --card:#FFFFFF; --text:#3A2530; --muted:#7A6068;
+  --accent:#A26769;
+  padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#221520; --card:#31202A; --text:#F3E7E0; --muted:#C7A9AF; } }
+:root[data-theme="dark"]{ --bg:#221520; --card:#31202A; --text:#F3E7E0; --muted:#C7A9AF; }
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100%;overflow:hidden;}
+#blobs{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
+.blob{position:absolute;border-radius:50%;filter:blur(50px);opacity:.35;transition:background 1s ease;}
+.blob.b1{width:38vw;height:38vw;top:-12vw;left:-10vw;background:radial-gradient(circle,var(--accent),transparent 70%);animation:drift1 22s ease-in-out infinite;}
+.blob.b2{width:30vw;height:30vw;bottom:-10vw;right:-8vw;background:radial-gradient(circle,var(--berry),transparent 70%);animation:drift2 26s ease-in-out infinite;}
+.blob.b3{width:20vw;height:20vw;top:40%;right:15%;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.22;animation:drift3 18s ease-in-out infinite;}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(4vw,3vw) scale(1.12);}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-3vw,-4vw) scale(1.08);}}
+@keyframes drift3{0%,100%{transform:translate(0,0);}50%{transform:translate(-2vw,3vw);}}
+#topbar{position:fixed;top:0;left:0;height:4px;z-index:12;background:var(--accent);transition:width .5s ease,background .6s ease;box-shadow:0 0 10px var(--accent);}
+#app{position:relative;width:100vw;height:100vh;z-index:1;}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:min(6vh,2.5rem) min(6vw,3rem);opacity:0;transform:translateX(50px) scale(.96);filter:blur(8px);
+  transition:opacity .6s cubic-bezier(.4,.1,.2,1), transform .6s cubic-bezier(.4,.1,.2,1), filter .6s ease;
+  pointer-events:none;overflow-y:auto;
+}
+.slide.active{opacity:1;transform:translateX(0) scale(1);filter:blur(0);pointer-events:auto;}
+.slide.dk{background:radial-gradient(circle at 18% 15%,color-mix(in srgb, var(--accent) 35%, var(--berry)),var(--berry) 55%,#3a1727);color:var(--white);}
+.slide.lt{background:var(--bg);}
+.content{width:100%;max-width:1100px;margin:auto;}
+h1.title{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(2rem,5vw,3.4rem);text-align:center;margin:0 0 .4em;letter-spacing:.01em;}
+h2.h{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(1.5rem,3.2vw,2.2rem);color:var(--accent);margin:0 0 .6em;text-align:center;}
+.slide.dk h2.h{color:var(--white);}
+.sub{font-style:italic;color:var(--muted);text-align:center;font-size:1.05rem;margin-top:.2em;}
+.badgewrap{position:relative;width:96px;height:96px;margin:0 auto 1em;}
+.ring{position:absolute;inset:0;animation:spin 16s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.badge{position:absolute;inset:8px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1.5rem;box-shadow:0 10px 26px rgba(0,0,0,.2);}
+.slide.active .badge{animation:pop .55s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes pop{from{transform:scale(.4) rotate(-10deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+ul.bullets{list-style:none;margin:0;padding:0;}
+ul.bullets li{position:relative;padding-left:1.5em;margin:.7em 0;font-size:1.02rem;line-height:1.5;opacity:0;transform:translateY(14px);}
+.slide.active ul.bullets li{animation:riseIn .5s ease forwards;}
+ul.bullets li::before{content:"";position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+@keyframes riseIn{to{opacity:1;transform:translateY(0);}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.card{background:var(--card);border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);border-radius:14px;padding:1.1rem 1.2rem;opacity:0;transform:translateY(18px) rotate(-1.5deg) scale(.96);box-shadow:0 8px 22px rgba(0,0,0,.08);}
+.slide.active .card{animation:riseIn2 .55s cubic-bezier(.2,.7,.3,1) forwards;}
+@keyframes riseIn2{to{opacity:1;transform:translateY(0) rotate(0) scale(1);}}
+.card h3{font-family:'Playfair Display',serif;color:var(--accent);margin:.5em 0 .3em;font-size:1.1rem;}
+.card p{margin:0;font-size:.9rem;color:var(--text);opacity:.9;line-height:1.45;}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+@media(max-width:720px){.cols2{grid-template-columns:1fr;}}
+.timeline{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;position:relative;}
+.tl-item{background:var(--card);border-left:4px solid var(--accent);border-radius:10px;padding:.85rem 1rem;width:210px;opacity:0;transform:translateY(18px);box-shadow:0 6px 16px rgba(0,0,0,.07);}
+.slide.active .tl-item{animation:riseIn .5s ease forwards;}
+.tl-item .n{font-family:'Playfair Display',serif;font-weight:700;color:var(--accent);font-size:1.3rem;}
+.quote{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:clamp(1.3rem,3.2vw,2rem);text-align:center;max-width:800px;line-height:1.45;position:relative;z-index:1;}
+.mini-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:.95rem;color:var(--accent);margin-top:.6em;border-left:3px solid var(--accent);padding-left:.6em;}
+.slide.dk .mini-quote{color:var(--cream);border-color:var(--cream);}
+.quotecard{background:var(--card);border-radius:14px;padding:1.3rem;box-shadow:0 8px 22px rgba(0,0,0,.08);opacity:0;transform:translateY(18px);}
+.slide.active .quotecard{animation:riseIn .55s ease forwards;}
+.quotecard p.q{font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:var(--accent);margin:0 0 .4em;}
+.quotecard p.who{font-size:.85rem;color:var(--muted);margin:0;}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;}
+.toc .item{display:flex;align-items:center;gap:.7rem;background:var(--card);border-radius:10px;padding:.7rem .9rem;opacity:0;transform:translateX(-14px);box-shadow:0 4px 14px rgba(0,0,0,.06);border-left:3px solid var(--accent);}
+.slide.active .toc .item{animation:slideRight .45s ease forwards;}
+@keyframes slideRight{to{opacity:1;transform:translateX(0);}}
+.toc .n{font-family:'Playfair Display',serif;font-weight:700;color:var(--accent);}
+.laurel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.9;}
+.progress{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10;flex-wrap:wrap;justify-content:center;max-width:70vw;}
+.progress span{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.4;transition:opacity .3s,transform .3s,background .3s;cursor:pointer;}
+.progress span.on{opacity:1;transform:scale(1.35);background:var(--accent);}
+.nav{position:fixed;top:50%;transform:translateY(-50%);z-index:10;background:color-mix(in srgb, var(--berry) 85%, black);color:#fff;border:none;width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:transform .15s,background .3s;}
+.nav:hover{background:var(--accent);transform:translateY(-50%) scale(1.08);}
+#prev{left:calc(14px + env(safe-area-inset-left,0px));}
+#next{right:calc(14px + env(safe-area-inset-right,0px));}
+.counter{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));right:16px;font-size:.78rem;color:var(--muted);z-index:10;}
+#fs{position:fixed;top:calc(20px + env(safe-area-inset-top,0px));left:16px;z-index:10;background:none;border:1px solid var(--muted);color:var(--muted);border-radius:8px;padding:.3em .6em;font-size:.75rem;cursor:pointer;}
+#fs:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+<div id="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div id="topbar"></div>
+<div id="app"></div>
+<button id="fs" title="Plein écran">⛶ Plein écran</button>
+<button class="nav" id="prev">‹</button>
+<button class="nav" id="next">›</button>
+<div class="counter" id="counter"></div>
+<div class="progress" id="progress"></div>
+
+<script>
+const GOLD="#D9A85C", ROSE="#A26769", TEAL="#2F8F86", TERRA="#C97B4A", INDIGO="#4C5B8C", PLUM="#8C5A9E";
+
+function ring(color){
+  return `<svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 7" opacity=".55"/></svg>`;
+}
+function sunburst(color,size){
+  size=size||120; const n=16, r1=size*0.30, r2=size*0.46, cx=size/2, cy=size/2;
+  let lines='';
+  for(let i=0;i<n;i++){
+    const a = (i/n)*2*Math.PI;
+    const x1=cx+r1*Math.cos(a), y1=cy+r1*Math.sin(a), x2=cx+r2*Math.cos(a), y2=cy+r2*Math.sin(a);
+    lines += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="3" stroke-linecap="round"/>`;
+  }
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">${lines}<circle cx="${cx}" cy="${cy}" r="${r1-6}" fill="none" stroke="${color}" stroke-width="2.5"/></svg>`;
+}
+function laurel(color){
+  const leavesOneSide=(sign)=>{
+    let out=''; const n=7;
+    for(let i=0;i<n;i++){
+      const t=i/(n-1);
+      const angle = sign * (20 + t*70) * Math.PI/180;
+      const rad = 90 + t*40;
+      const cx = 160 + sign*Math.sin(angle)*rad*0.55;
+      const cy = 40 + (1-Math.cos(angle))*rad*0.9;
+      const rot = sign*(30+t*55);
+      out += `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="13" ry="6" fill="${color}" opacity="${0.35+t*0.5}" transform="rotate(${rot} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`;
+    }
+    return out;
+  };
+  return `<svg viewBox="0 0 320 140" width="320" height="140">${leavesOneSide(-1)}${leavesOneSide(1)}</svg>`;
+}
+
+const S = [
+{type:'title', theme:'dk', accent:GOLD, title:"CANDIDE, OU L'OPTIMISME", sub:"Voltaire · 1759 — Personnages, événements et portée d'un conte philosophique"},
+
+{type:'toc', theme:'lt', accent:TEAL, h:"Sommaire", items:[
+ "Contexte historique et philosophique","Résumé de l'intrigue","Les personnages principaux","Les personnages secondaires",
+ "Chronologie des événements clés","Thèmes majeurs de la satire","Style, procédés et postérité","Citations clés",
+ "Vocabulaire et notions littéraires","Questions pour la classe"
+]},
+
+{type:'text', theme:'lt', accent:INDIGO, h:"Contexte historique et philosophique", bullets:[
+ "Écrit et publié anonymement en 1759, en pleine effervescence des Lumières.",
+ "Réplique directe à la philosophie optimiste de Leibniz : « tout est pour le mieux dans le meilleur des mondes possibles ».",
+ "Marqué par le tremblement de terre de Lisbonne (1755, environ 50 000 morts) qui ébranle la croyance en un monde providentiel.",
+ "Écrit dans l'ombre de la guerre de Sept Ans (1756-1763), une des premières guerres à l'échelle mondiale.",
+ "Immédiatement condamné et interdit à Genève et à Paris, mais diffusé clandestinement à des dizaines de milliers d'exemplaires."
+]},
+
+{type:'text', theme:'lt', accent:INDIGO, h:"Résumé de l'intrigue", bullets:[
+ "Candide, jeune homme naïf, grandit au château du baron de Thunder-ten-tronckh en Westphalie, formé par le précepteur Pangloss.",
+ "Chassé après avoir embrassé Cunégonde, il traverse guerres, naufrages, séisme et Inquisition.",
+ "Un bref séjour dans l'utopie d'Eldorado lui révèle un monde d'abondance et de sagesse — qu'il choisit pourtant de quitter.",
+ "Après avoir retrouvé Cunégonde, devenue laide et acariâtre, il l'épouse malgré tout.",
+ "Le récit s'achève sur une philosophie modeste : « il faut cultiver notre jardin »."
+]},
+
+{type:'section', theme:'dk', accent:ROSE, letter:'P', h:"Les personnages principaux", sub:"Candide, Cunégonde, Pangloss, Martin, Cacambo"},
+
+{type:'character', theme:'lt', accent:ROSE, letter:'C', name:'Candide', role:'Le héros naïf', bullets:[
+ "Jeune homme élevé au château du baron, probablement fils illégitime de sa sœur.",
+ "Disciple fervent de Pangloss, il croit d'abord dur comme fer à l'optimisme.",
+ "Chassé après un baiser volé à Cunégonde, il devient le jouet du hasard et du malheur.",
+ "Traverse l'Europe et l'Amérique du Sud, accumulant les épreuves sans jamais renoncer à l'espoir.",
+ "Évolue peu à peu vers une sagesse pratique : il abandonne les grands discours pour l'action concrète."
+], quote:"« Si c'est ici le meilleur des mondes possibles, que sont donc les autres ? »"},
+
+{type:'cols', theme:'lt', accent:ROSE, h:"Cunégonde & Pangloss", left:{letter:'Cu', name:'Cunégonde', bullets:[
+ "Fille du baron, aimée de Candide depuis l'enfance.",
+ "Violée et vendue à plusieurs reprises au fil de ses malheurs.",
+ "Perd sa beauté légendaire au fil des épreuves subies.",
+ "Finit par épouser Candide, devenu bien moins idéaliste qu'elle."
+]}, right:{letter:'Pa', name:'Pangloss', bullets:[
+ "Précepteur philosophe, caricature du disciple de Leibniz.",
+ "Répète que « tout est au mieux » quelle que soit la catastrophe vécue.",
+ "Survit à la pendaison, à la maladie et à la misère sans jamais renier sa doctrine.",
+ "Incarne la cible principale de la satire voltairienne contre l'optimisme aveugle."
+], quote:"« Il est démontré que les choses ne peuvent être autrement... tout est au mieux. »"}},
+
+{type:'cols', theme:'lt', accent:ROSE, h:"Martin & Cacambo", left:{letter:'M', name:'Martin', bullets:[
+ "Savant pessimiste rencontré à Surinam, il devient le compagnon de voyage de Candide.",
+ "Convaincu que le mal domine partout le monde — l'antithèse exacte de Pangloss.",
+ "Sert de contrepoint critique et lucide, sans jamais avoir totalement raison lui non plus.",
+ "Représente une autre impasse philosophique : le pessimisme systématique."
+]}, right:{letter:'Ca', name:'Cacambo', bullets:[
+ "Valet fidèle, débrouillard et polyglotte de Candide en Amérique du Sud.",
+ "Le guide jusqu'à l'utopie cachée d'Eldorado.",
+ "Incarne la loyauté et le bon sens pratique, loin des débats philosophiques stériles.",
+ "Un des rares personnages dont la fidélité n'est jamais démentie dans le conte."
+]}},
+
+{type:'section', theme:'dk', accent:TEAL, letter:'S', h:"Les personnages secondaires", sub:"Des figures qui incarnent chacune une facette de la satire de Voltaire"},
+
+{type:'grid', theme:'lt', accent:TEAL, h:"Autour de Candide", cards:[
+ {letter:'V', name:'La vieille', text:"Servante de Cunégonde, fille de pape et de princesse ; elle a subi d'immenses malheurs et les raconte pour relativiser ceux des autres."},
+ {letter:'B', name:'Le baron', text:"Frère de Cunégonde, obsédé par la pureté de son sang noble ; il refuse le mariage de sa sœur même après tous les malheurs endurés."},
+ {letter:'J', name:"Jacques l'anabaptiste", text:"Généreux protecteur de Candide à Lisbonne, symbole de la vraie charité ; il meurt noyé en sauvant un marin qui l'a pourtant maltraité."},
+ {letter:'I', name:'Le Grand Inquisiteur', text:"Figure du fanatisme religieux et de l'Inquisition portugaise ; rival de Candide pour Cunégonde, il est tué par ce dernier."},
+ {letter:'Po', name:'Pococurante', text:"Riche seigneur vénitien blasé de tout malgré ses richesses, incarnation de l'ennui né de l'abondance sans but."},
+ {letter:'E', name:"Le roi d'Eldorado", text:"Souverain sage d'un pays utopique où règnent l'abondance, la tolérance et l'absence de justice répressive."},
+]},
+
+{type:'section', theme:'dk', accent:TERRA, letter:'É', h:"Les événements clés", sub:"Du château de Westphalie au jardin final"},
+
+{type:'timeline', theme:'lt', accent:TERRA, h:"Chronologie détaillée du récit", items:[
+ {n:'1', t:"L'expulsion", d:"Candide est chassé du château après avoir embrassé Cunégonde."},
+ {n:'2', t:"La guerre", d:"Il assiste aux horreurs de la guerre entre Bulgares et Abares."},
+ {n:'3', t:"Le naufrage", d:"Candide et Pangloss font naufrage au large du Portugal."},
+ {n:'4', t:"Lisbonne", d:"Séisme dévastateur puis autodafé de l'Inquisition ; Pangloss pendu, mais survit."},
+ {n:'5', t:"Eldorado", d:"Découverte d'une utopie cachée d'abondance et de tolérance."},
+ {n:'6', t:"Le départ", d:"Candide quitte Eldorado, chargé d'or, pour retrouver Cunégonde."},
+ {n:'7', t:"Constantinople", d:"Retrouvailles avec Cunégonde, désormais laide ; il l'épouse malgré tout."},
+ {n:'8', t:"Le jardin", d:"Installation collective : « il faut cultiver notre jardin »."},
+]},
+
+{type:'text', theme:'lt', accent:INDIGO, h:"Thèmes majeurs de la satire", bullets:[
+ "La critique de l'optimisme philosophique : le monde n'est ni bon ni gouverné par une providence bienveillante.",
+ "La dénonciation de la guerre, présentée comme absurde, cruelle et dépourvue de sens héroïque.",
+ "La critique du fanatisme religieux : Inquisition, autodafés, hypocrisie du clergé.",
+ "La dénonciation de l'esclavage et de la cupidité coloniale, notamment via l'épisode du nègre de Surinam.",
+ "La critique de l'orgueil nobiliaire, incarné par le baron obsédé par ses quartiers de noblesse."
+]},
+
+{type:'text', theme:'lt', accent:PLUM, h:"Style, procédés et postérité", bullets:[
+ "Un rythme narratif effréné : les catastrophes s'enchaînent sans laisser le temps de la réflexion.",
+ "L'ironie voltairienne : Pangloss répète sa doctrine y compris au pire moment, créant un décalage comique constant.",
+ "L'exagération et l'invraisemblance assumées, qui servent la démonstration philosophique plutôt que le réalisme.",
+ "Une œuvre censurée puis best-seller clandestin, aujourd'hui l'un des textes les plus étudiés de la littérature française.",
+ "La formule finale, « il faut cultiver notre jardin », est devenue une expression proverbiale bien au-delà du texte."
+]},
+
+{type:'quotes', theme:'lt', accent:PLUM, h:"Citations clés à retenir", items:[
+ {q:"« Tout est pour le mieux dans le meilleur des mondes possibles. »", w:"Pangloss — le refrain de l'optimisme"},
+ {q:"« Travaillons sans raisonner, c'est le seul moyen de rendre la vie supportable. »", w:"Martin, en écho à la sagesse finale"},
+ {q:"« Cela est bien dit, répondit Candide, mais il faut cultiver notre jardin. »", w:"Dernière ligne du conte"},
+ {q:"« Si c'est ici le meilleur des mondes possibles, que sont donc les autres ? »", w:"Candide, doutant de Pangloss"},
+]},
+
+{type:'grid', theme:'lt', accent:GOLD, h:"Vocabulaire et notions littéraires", cards:[
+ {letter:'CP', name:'Conte philosophique', text:"Récit court mêlant fiction et réflexion critique, utilisé au XVIIIe siècle pour diffuser des idées sous une forme divertissante."},
+ {letter:'Sa', name:'Satire', text:"Genre qui tourne en ridicule des idées, des institutions ou des comportements pour mieux les critiquer."},
+ {letter:'Ir', name:'Ironie', text:"Dire le contraire de ce que l'on pense pour souligner l'absurdité d'une situation ou d'un discours."},
+ {letter:'Ut', name:'Utopie', text:"Représentation d'une société idéale, ici incarnée par Eldorado, qui sert de contre-modèle critique."},
+ {letter:'Ap', name:'Apologue', text:"Récit court porteur d'une morale ou d'un enseignement, proche du conte philosophique."},
+ {letter:'Pv', name:'Providentialisme', text:"Croyance qu'un ordre divin bienveillant gouverne le monde — doctrine centrale visée par la satire."},
+]},
+
+{type:'text', theme:'lt', accent:TERRA, h:"Questions pour la classe", bullets:[
+ "En quoi Pangloss est-il une caricature, et de quelle philosophie précisément ?",
+ "Pourquoi Candide choisit-il de quitter Eldorado alors qu'il y avait tout pour être heureux ?",
+ "Quels événements historiques réels Voltaire transforme-t-il en satire dans le récit ?",
+ "Que signifie concrètement « il faut cultiver notre jardin » selon vous ?",
+ "Le pessimisme de Martin est-il présenté comme une réponse plus juste que l'optimisme de Pangloss ?"
+]},
+
+{type:'quote', theme:'dk', accent:GOLD, text:"« Il faut cultiver notre jardin. »", sub:"Une invitation à l'action modeste et concrète, loin des grands systèmes philosophiques abstraits."}
+];
+
+let idx = 0;
+const app = document.getElementById('app');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+const topbar = document.getElementById('topbar');
+
+function bulletsHTML(arr){
+  return '<ul class="bullets">' + arr.map((b,i)=>`<li style="animation-delay:${i*0.09}s">${b}</li>`).join('') + '</ul>';
+}
+
+function renderSlide(s){
+  const div = document.createElement('div');
+  div.className = 'slide ' + s.theme;
+  div.style.setProperty('--accent', s.accent);
+  let inner = '<div class="content">';
+  if(s.type === 'title'){
+    inner += `<div class="badgewrap" style="width:140px;height:140px;">${ring(s.accent)}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">${sunburst(s.accent,110)}</div></div>`;
+    inner += `<h1 class="title">${s.title}</h1><p class="sub">${s.sub}</p>`;
+  } else if(s.type === 'toc'){
+    inner += `<h2 class="h">${s.h}</h2><div class="toc">` + s.items.map((it,i)=>`<div class="item" style="animation-delay:${i*0.05}s"><span class="n">${String(i+1).padStart(2,'0')}</span><span>${it}</span></div>`).join('') + `</div>`;
+  } else if(s.type === 'section'){
+    inner += `<div class="badgewrap">${ring(s.accent)}<div class="badge">${s.letter}</div></div><h1 class="title">${s.h}</h1><p class="sub">${s.sub}</p>`;
+  } else if(s.type === 'text'){
+    inner += `<h2 class="h">${s.h}</h2>` + bulletsHTML(s.bullets);
+  } else if(s.type === 'character'){
+    inner += `<div class="badgewrap">${ring(s.accent)}<div class="badge">${s.letter}</div></div><h2 class="h">${s.name}</h2><p class="sub" style="margin-bottom:1em">${s.role}</p>` + bulletsHTML(s.bullets);
+    if(s.quote) inner += `<p class="mini-quote">${s.quote}</p>`;
+  } else if(s.type === 'cols'){
+    inner += `<h2 class="h">${s.h}</h2><div class="cols2">`;
+    [s.left, s.right].forEach(c=>{
+      inner += `<div class="card"><div class="badgewrap" style="width:64px;height:64px;">${ring(s.accent)}<div class="badge" style="inset:6px;font-size:1rem;">${c.letter}</div></div><h3 style="text-align:center">${c.name}</h3>` + bulletsHTML(c.bullets) + (c.quote?`<p class="mini-quote">${c.quote}</p>`:'') + `</div>`;
+    });
+    inner += `</div>`;
+  } else if(s.type === 'grid'){
+    inner += `<h2 class="h">${s.h}</h2><div class="grid">`;
+    s.cards.forEach(c=>{
+      inner += `<div class="card"><div class="badgewrap" style="width:52px;height:52px;margin-bottom:.6em;">${ring(s.accent)}<div class="badge" style="inset:5px;font-size:.85rem;">${c.letter}</div></div><h3>${c.name}</h3><p>${c.text}</p></div>`;
+    });
+    inner += `</div>`;
+  } else if(s.type === 'timeline'){
+    inner += `<h2 class="h">${s.h}</h2><div class="timeline">`;
+    s.items.forEach(it=>{
+      inner += `<div class="tl-item"><div class="n">${it.n}</div><h3 style="margin:.2em 0">${it.t}</h3><p style="font-size:.86rem;opacity:.85">${it.d}</p></div>`;
+    });
+    inner += `</div>`;
+  } else if(s.type === 'quotes'){
+    inner += `<h2 class="h">${s.h}</h2><div class="grid">`;
+    s.items.forEach(it=>{
+      inner += `<div class="quotecard"><p class="q">${it.q}</p><p class="who">${it.w}</p></div>`;
+    });
+    inner += `</div>`;
+  } else if(s.type === 'quote'){
+    inner += `<div class="laurel" style="top:8%;">${laurel(s.accent)}</div><p class="quote">${s.text}</p><p class="sub" style="margin-top:1em;position:relative;z-index:1;">${s.sub}</p>`;
+  }
+  inner += '</div>';
+  div.innerHTML = inner;
+  return div;
+}
+
+function build(){
+  app.innerHTML = '';
+  S.forEach(s=> app.appendChild(renderSlide(s)) );
+  progress.innerHTML = S.map((_,i)=>`<span data-i="${i}"></span>`).join('');
+  update();
+}
+
+function update(){
+  const slides = app.querySelectorAll('.slide');
+  slides.forEach((el,i)=> el.classList.toggle('active', i===idx) );
+  progress.querySelectorAll('span').forEach((el,i)=> el.classList.toggle('on', i===idx) );
+  counter.textContent = (idx+1) + ' / ' + S.length;
+  const accent = S[idx].accent;
+  document.documentElement.style.setProperty('--accent', accent);
+  topbar.style.width = ((idx+1)/S.length*100) + '%';
+  topbar.style.background = accent;
+}
+
+function go(n){
+  idx = Math.max(0, Math.min(S.length-1, n));
+  update();
+  try{ localStorage.setItem('candide_slide_idx', idx); }catch(e){}
+}
+
+document.getElementById('prev').onclick = ()=> go(idx-1);
+document.getElementById('next').onclick = ()=> go(idx+1);
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' || e.key===' ') go(idx+1);
+  if(e.key==='ArrowLeft') go(idx-1);
+  if(e.key==='f' || e.key==='F') toggleFS();
+});
+progress.addEventListener('click', e=>{
+  const s = e.target.closest('span');
+  if(s) go(parseInt(s.dataset.i));
+});
+let touchX=null;
+document.addEventListener('touchstart', e=> touchX = e.touches[0].clientX);
+document.addEventListener('touchend', e=>{
+  if(touchX===null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if(Math.abs(dx) > 50) go(dx<0 ? idx+1 : idx-1);
+  touchX=null;
+});
+function toggleFS(){
+  try{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    else document.exitFullscreen && document.exitFullscreen();
+  }catch(e){}
+}
+document.getElementById('fs').onclick = toggleFS;
+
+(function init(){
+  let saved = 0;
+  try{ saved = parseInt(localStorage.getItem('candide_slide_idx')) || 0; }catch(e){}
+  idx = (saved>=0 && saved<S.length) ? saved : 0;
+  build();
+})();
+</script>
+</body>
+</html>
